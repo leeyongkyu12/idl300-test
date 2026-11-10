@@ -1,0 +1,46 @@
+name: Build iPhone app
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build unsigned iPhone app
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p IDL300Probe.xcodeproj
+          cp project.pbxproj IDL300Probe.xcodeproj/project.pbxproj
+          xcodebuild -version
+          xcodebuild -project IDL300Probe.xcodeproj \
+            -target IDL300Probe -configuration Release -sdk iphoneos \
+            ARCHS=arm64 ONLY_ACTIVE_ARCH=NO \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CONFIGURATION_BUILD_DIR="$GITHUB_WORKSPACE/build/app" \
+            build
+      - name: Package unsigned IPA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f build/app/IDL300Probe.app/IDL300Probe
+          plutil -lint build/app/IDL300Probe.app/Info.plist
+          mkdir -p build/package/Payload
+          ditto build/app/IDL300Probe.app build/package/Payload/IDL300Probe.app
+          cd build/package
+          /usr/bin/zip -qry ../IDL300-unsigned.ipa Payload
+          /usr/bin/unzip -t ../IDL300-unsigned.ipa
+      - name: Downloadable app file
+        uses: actions/upload-artifact@v4
+        with:
+          name: IDL300-iPhone-unsigned
+          path: build/IDL300-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 7
