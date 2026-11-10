@@ -1,2 +1,5 @@
-# idl300-test
-Login-free iOS BLE diagnostic app. Door unlocking is not implemented.
+# 우리집 도어락
+
+로그인 없는 iOS BLE 연결 확인용 앱입니다. 문 열기, 자동 열기, 인증키 등록은 아직 구현되지 않았습니다.
+
+GitHub Actions에서 Xcode 프로젝트 폴더를 구성한 후 서명되지 않은 IPA를 빌드합니다. 내려받은 IPA는 무료 Apple 계정으로 별도 서명해야 설치할 수 있습니다. 개인 인증정보는 저장소에 올리지 않습니다.

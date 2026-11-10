@@ -1,0 +1,20 @@
+// !$*UTF8*$!
+{ archiveVersion = 1; classes = {}; objectVersion = 56; objects = {
+000000000000000000000001 = { isa = PBXProject; attributes = { LastUpgradeCheck = 1600; }; buildConfigurationList = 000000000000000000000014; compatibilityVersion = "Xcode 14.0"; developmentRegion = ko; knownRegions = (ko,en,Base); mainGroup = 000000000000000000000002; productRefGroup = 000000000000000000000003; projectDirPath = ""; projectRoot = ""; targets = (000000000000000000000004); };
+000000000000000000000002 = { isa = PBXGroup; children = (000000000000000000000005, 000000000000000000000006, 000000000000000000000003); sourceTree = "<group>"; };
+000000000000000000000003 = { isa = PBXGroup; children = (000000000000000000000007); name = Products; sourceTree = "<group>"; };
+000000000000000000000004 = { isa = PBXNativeTarget; buildConfigurationList = 000000000000000000000015; buildPhases = (000000000000000000000009, 00000000000000000000000A, 00000000000000000000000B); buildRules = (); dependencies = (); name = IDL300Probe; productName = IDL300Probe; productReference = 000000000000000000000007; productType = "com.apple.product-type.application"; };
+000000000000000000000005 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDL300Probe.swift; sourceTree = "<group>"; };
+000000000000000000000006 = { isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+000000000000000000000007 = { isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IDL300Probe.app; sourceTree = BUILT_PRODUCTS_DIR; };
+000000000000000000000008 = { isa = PBXBuildFile; fileRef = 000000000000000000000005; };
+000000000000000000000009 = { isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (000000000000000000000008); runOnlyForDeploymentPostprocessing = 0; };
+00000000000000000000000A = { isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+00000000000000000000000B = { isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+000000000000000000000014 = { isa = XCConfigurationList; buildConfigurations = (000000000000000000000016, 000000000000000000000017); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+000000000000000000000015 = { isa = XCConfigurationList; buildConfigurations = (000000000000000000000018, 000000000000000000000019); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+000000000000000000000016 = { isa = XCBuildConfiguration; name = Debug; buildSettings = { SDKROOT = iphoneos; IPHONEOS_DEPLOYMENT_TARGET = 16.0; CLANG_ENABLE_MODULES = YES; SWIFT_VERSION = 5.0; }; };
+000000000000000000000017 = { isa = XCBuildConfiguration; name = Release; buildSettings = { SDKROOT = iphoneos; IPHONEOS_DEPLOYMENT_TARGET = 16.0; CLANG_ENABLE_MODULES = YES; SWIFT_VERSION = 5.0; }; };
+000000000000000000000018 = { isa = XCBuildConfiguration; name = Debug; buildSettings = { CODE_SIGN_STYLE = Automatic; DEVELOPMENT_TEAM = ""; PRODUCT_BUNDLE_IDENTIFIER = com.example.IDL300Probe; PRODUCT_NAME = "$(TARGET_NAME)"; INFOPLIST_FILE = Info.plist; GENERATE_INFOPLIST_FILE = NO; TARGETED_DEVICE_FAMILY = 1; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; SWIFT_VERSION = 5.0; SWIFT_OPTIMIZATION_LEVEL = "-Onone"; LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks"); CURRENT_PROJECT_VERSION = 1; MARKETING_VERSION = 0.1; }; };
+000000000000000000000019 = { isa = XCBuildConfiguration; name = Release; buildSettings = { CODE_SIGN_STYLE = Automatic; DEVELOPMENT_TEAM = ""; PRODUCT_BUNDLE_IDENTIFIER = com.example.IDL300Probe; PRODUCT_NAME = "$(TARGET_NAME)"; INFOPLIST_FILE = Info.plist; GENERATE_INFOPLIST_FILE = NO; TARGETED_DEVICE_FAMILY = 1; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; SWIFT_VERSION = 5.0; SWIFT_OPTIMIZATION_LEVEL = "-O"; LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks"); CURRENT_PROJECT_VERSION = 1; MARKETING_VERSION = 0.1; }; };
+}; rootObject = 000000000000000000000001; }
