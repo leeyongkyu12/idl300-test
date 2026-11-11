@@ -1,6 +1,7 @@
 import SwiftUI
 import CoreBluetooth
 import Combine
+import UniformTypeIdentifiers
 
 @main
 struct IDL300ProbeApp: App {
@@ -180,7 +181,49 @@ final class BluetoothProbe: NSObject, ObservableObject, CBCentralManagerDelegate
     }
 }
 
+struct LockProfile: Codable {
+    let version: Int
+    let name: String
+    let qr: String
+    var isValid: Bool {
+        let bytes = Array(qr.utf8)
+        guard version == 1, bytes.count == 30,
+              bytes.allSatisfy({ $0 >= 33 && $0 <= 126 }),
+              !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+              name.count <= 80 else { return false }
+        let sum = bytes.prefix(22).reduce(0) { $0 + Int($1) }
+        return String(format: "%04X", sum) == String(decoding: bytes[22..<26], as: UTF8.self)
+    }
+}
+
 struct ProbeView: View {
+    @AppStorage("localLockProfile") private var savedProfile = ""
+    @State private var importingProfile = false
+    @State private var profileMessage = ""
+    private var lockProfile: LockProfile? {
+        guard let data = savedProfile.data(using: .utf8),
+              let value = try? JSONDecoder().decode(LockProfile.self, from: data),
+              value.isValid else { return nil }
+        return value
+    }
+    private func importProfile(_ result: Result<URL, Error>) {
+        do {
+            let url = try result.get()
+            let access = url.startAccessingSecurityScopedResource()
+            defer { if access { url.stopAccessingSecurityScopedResource() } }
+            let size = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
+            guard size <= 8192 else { profileMessage = "기기 파일이 너무 큽니다."; return }
+            let data = try Data(contentsOf: url)
+            guard data.count <= 8192 else { profileMessage = "기기 파일이 너무 큽니다."; return }
+            let value = try JSONDecoder().decode(LockProfile.self, from: data)
+            guard value.isValid else { profileMessage = "QR 형식 또는 체크섬이 맞지 않습니다."; return }
+            savedProfile = String(decoding: try JSONEncoder().encode(value), as: UTF8.self)
+            profileMessage = "이 아이폰에 기기 정보를 저장했습니다. 도어락 인증은 아직 완료되지 않았습니다."
+        } catch {
+            profileMessage = "기기 파일을 가져오지 못했습니다. 파일 선택을 다시 시도해주세요."
+        }
+    }
+
     @StateObject private var probe = BluetoothProbe()
     @Environment(\.scenePhase) private var scenePhase
     var body: some View {
@@ -193,6 +236,17 @@ struct ProbeView: View {
                     Text("회원가입과 로그인 없이 시작합니다.").foregroundStyle(.secondary)
                     Label("문 열기 · 아직 지원하지 않음", systemImage: "lock.fill")
                     Text("현재는 연결 확인용입니다. 새 휴대폰 등록과 자동 문 열기는 사용할 수 없습니다.").font(.caption).foregroundStyle(.secondary)
+                }
+                Section("내 도어락 정보") {
+                    if let profile = lockProfile {
+                        Text(profile.name).font(.headline)
+                        Text("QR 확인됨 · " + String(profile.qr.prefix(4)) + "…" + String(profile.qr.suffix(4)))
+                        Text("기기 정보 저장 완료 · 연결 대상 확인과 인증은 미완료").font(.caption).foregroundStyle(.secondary)
+                    } else {
+                        Text("사진에서 만든 개인 기기 파일을 불러오세요.")
+                    }
+                    Button("기기 파일 가져오기") { importingProfile = true }
+                    if !profileMessage.isEmpty { Text(profileMessage).font(.caption) }
                 }
                 Section("상태") {
                     Text(probe.status)
@@ -236,6 +290,7 @@ struct ProbeView: View {
                 }
             }
             .navigationTitle("우리집 도어락")
+            .fileImporter(isPresented: $importingProfile, allowedContentTypes: [.json], onCompletion: importProfile)
             .onChange(of: scenePhase) { phase in
                 if phase != .active { probe.stopScan(); probe.disconnect() }
             }
