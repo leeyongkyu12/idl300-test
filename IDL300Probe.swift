@@ -30,6 +30,7 @@ final class BluetoothProbe: NSObject, ObservableObject, CBCentralManagerDelegate
     private var central: CBCentralManager!
     private var peripherals: [UUID: CBPeripheral] = [:]
     private var active: CBPeripheral?
+    private var lastConnectedID: UUID?
     private var scanTimer: Timer?
     private var connectionTimer: Timer?
     private var pendingServices = 0
@@ -115,6 +116,7 @@ final class BluetoothProbe: NSObject, ObservableObject, CBCentralManagerDelegate
     }
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         guard activeID == peripheral.identifier else { return }
+        lastConnectedID = peripheral.identifier
         status = "연결 성공 · 제공 기능 확인 중"
         log("Connected \(peripheral.identifier)")
         peripheral.discoverServices(nil)
@@ -171,7 +173,7 @@ final class BluetoothProbe: NSObject, ObservableObject, CBCentralManagerDelegate
         }
         let payload: [String: Any] = ["app": "IDL300 Probe 0.1", "createdAt": ISO8601DateFormatter().string(from: Date()),
             "note": "Diagnostic only. Device identity not verified. No unlock commands or characteristic values read/written.",
-            "devices": rows, "selectedDevice": activeID?.uuidString ?? "", "details": details, "events": events]
+            "devices": rows, "selectedDevice": (activeID ?? lastConnectedID)?.uuidString ?? "", "details": details, "events": events]
         do {
             let data = try JSONSerialization.data(withJSONObject: payload, options: [.prettyPrinted, .sortedKeys])
             let url = FileManager.default.temporaryDirectory.appendingPathComponent("IDL300-\(UUID().uuidString.prefix(8)).json")
